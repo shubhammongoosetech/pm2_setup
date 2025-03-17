@@ -1,0 +1,179 @@
+
+https://medium.com/@ayushnandanwar003/deploying-node-js-applications-using-pm2-a-detailed-guide-b8b6d55dfc88
+
+Deploying Node.js applications can be a complex process, especially when aiming for high availability and optimal performance. PM2, a popular production process manager for Node.js applications, simplifies this process significantly. In this comprehensive guide, we’ll cover how to deploy Node.js applications using PM2, ensuring your applications are robust, efficient, and easy to manage.
+
+Table of Contents
+Introduction to PM2
+Setting Up Your Node.js Application
+Installing PM2
+Starting Your Application with PM2
+Managing Application Processes with PM2
+Auto-Restart on File Changes
+Log Management with PM2
+Monitoring Your Application
+Configuring PM2 for Production
+Setting Up PM2 Startup Scripts
+Conclusion
+1. Introduction to PM2
+PM2 is a production-grade process manager for Node.js applications that allows you to keep applications alive forever, reload them without downtime, and facilitate common system admin tasks. It provides features such as:
+
+Easy process management
+Auto-restart on crashes
+Log management
+Application monitoring
+2. Setting Up Your Node.js Application
+Let’s start by setting up a simple Node.js application. If you already have an application, you can skip this step.
+
+Step 1: Initialize Your Project
+mkdir pm2-deployment
+cd pm2-deployment
+npm init -y
+Step 2: Install Express (Optional)
+For this example, we’ll use Express to create a simple server:
+
+npm install express
+Step 3: Create Your Application
+Create a file named app.js:
+
+// app.js
+const express = require('express');
+const app = express();
+const port = 3000;
+
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
+3. Installing PM2
+Install PM2 globally using npm:
+
+npm install -g pm2
+4. Starting Your Application with PM2
+To start your application with PM2, use the following command:
+
+pm2 start app.js
+PM2 will start your application and keep it running in the background. You can check the status of your application with:
+
+pm2 list
+This command displays a list of all processes managed by PM2, showing their status, uptime, and other details.
+
+5. Managing Application Processes with PM2
+PM2 provides a variety of commands to manage your application processes:
+
+Stopping a Process:
+pm2 stop app
+Restarting a Process:
+pm2 restart app
+Deleting a Process:
+pm2 delete app
+Viewing Process Details:
+pm2 describe app
+Viewing Application Logs:
+pm2 logs app
+6. Auto-Restart on File Changes
+During development, it can be useful to automatically restart your application when files change. PM2 provides this functionality out of the box with the --watch flag:
+
+pm2 start app.js --watch
+You can specify which files or directories to watch by creating a pm2.config.js file:
+
+module.exports = {
+  apps: [
+    {
+      name: 'app',
+      script: './app.js',
+      watch: true,
+      ignore_watch: ['node_modules', 'logs']
+    }
+  ]
+};
+Start your application using the configuration file:
+
+pm2 start pm2.config.js
+7. Log Management with PM2
+PM2 automatically captures and manages logs for your applications. By default, PM2 stores logs in the ~/.pm2/logs directory.
+
+You can view logs in real-time using the logs command:
+
+pm2 logs
+To clear logs, use:
+
+pm2 flush
+You can also configure custom log paths in your pm2.config.js:
+
+module.exports = {
+  apps: [
+    {
+      name: 'app',
+      script: './app.js',
+      out_file: './logs/out.log',
+      error_file: './logs/error.log',
+      log_date_format: 'YYYY-MM-DD HH:mm Z'
+    }
+  ]
+};
+8. Monitoring Your Application
+PM2 provides monitoring tools to keep an eye on your application’s performance and resource usage. The monit command opens a real-time monitoring dashboard:
+
+pm2 monit
+For more detailed insights, you can use PM2’s integration with keymetrics.io:
+
+Sign up at keymetrics.io.
+Link your PM2 instance with Keymetrics:
+pm2 link <public-key> <secret-key>
+This provides a web interface to monitor, manage, and receive alerts for your applications.
+
+9. Configuring PM2 for Production
+In a production environment, it’s crucial to ensure your application runs smoothly and efficiently. PM2 offers several configuration options to optimize performance:
+
+Cluster Mode
+Running your application in cluster mode allows you to leverage multi-core systems. PM2 automatically manages child processes and load balances requests across them:
+
+pm2 start app.js -i max
+This command starts as many instances as there are CPU cores available.
+
+Environment Variables
+You can set environment variables in your pm2.config.js:
+
+module.exports = {
+  apps: [
+    {
+      name: 'app',
+      script: './app.js',
+      env: {
+        NODE_ENV: 'development',
+        PORT: 3000
+      },
+      env_production: {
+        NODE_ENV: 'production',
+        PORT: 80
+      }
+    }
+  ]
+};
+Start your application in production mode with:
+
+pm2 start pm2.config.js --env production
+10. Setting Up PM2 Startup Scripts
+To ensure PM2 starts automatically when your server reboots, use the startup command to generate and configure startup scripts:
+
+pm2 startup
+This command generates a command specific to your operating system. Run the generated command to configure the startup script.
+
+Saving the Process List
+Save the current process list so that PM2 can resurrect it on reboot:
+
+pm2 save
+Restoring the Process List
+When your server reboots, PM2 will automatically restore the saved processes. You can also manually resurrect processes with:
+
+pm2 resurrect
+Conclusion
+PM2 is a powerful tool for deploying and managing Node.js applications in production. It simplifies the process of keeping your application running, managing logs, and monitoring performance. By following this guide, you should be able to deploy your Node.js applications with confidence, ensuring high availability and efficient resource usage.
+
+Whether you’re deploying a simple app or a complex microservices architecture, PM2 provides the features and flexibility needed to manage your applications effectively. Happy deploying!
+
+I hope this guide helps you understand how to deploy Node.js applications using PM2. If you have any questions or feedback, feel free to leave a comment below!
